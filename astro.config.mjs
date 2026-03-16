@@ -1,5 +1,6 @@
 import { defineConfig } from 'astro/config';
 
 export default defineConfig({
-  site: 'https://noahollander.com',
+  site: 'https://oren-hollander.github.io',
+  base: '/noa-hollander-website',
 });

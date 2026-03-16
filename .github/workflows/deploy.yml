@@ -32,6 +32,8 @@ jobs:
 
       - name: Build Astro
         run: npx astro build
+        env:
+          BUILD_BASE: /noa-hollander-website
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

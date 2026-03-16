@@ -37,7 +37,6 @@ const base = import.meta.env.BASE_URL;
       </h1>
       <div class="hero-divider"></div>
       <p class="hero-tagline">Aviation Management · Israeli Air Force Veteran</p>
-      <img src={`${base}images/signature.png`} alt="" class="hero-signature" />
     </div>
     <div class="hero-scroll-hint">
       <span>Scroll</span>
@@ -420,13 +419,6 @@ const base = import.meta.env.BASE_URL;
     letter-spacing: 0.18em;
     text-transform: uppercase;
   }
-  .hero-signature {
-    margin: 2.5rem auto 0;
-    width: clamp(140px, 18vw, 220px);
-    opacity: 0.5;
-    filter: invert(1);
-    mix-blend-mode: screen;
-  }
   .hero-scroll-hint {
     position: absolute;
     bottom: 2.5rem;
@@ -793,9 +785,9 @@ const base = import.meta.env.BASE_URL;
   .contact-signature {
     margin-top: 4rem;
     width: 180px;
-    opacity: 0.35;
-    filter: invert(1);
-    mix-blend-mode: screen;
+    opacity: 0.5;
+    filter: brightness(0) invert(1);
+    mix-blend-mode: lighten;
   }
 
   /* ── Footer ── */
@@ -873,10 +865,6 @@ const base = import.meta.env.BASE_URL;
       duration: 0.7,
       ease: 'power2.out',
     }, '-=0.3')
-    .from('.hero-signature', {
-      opacity: 0,
-      duration: 0.8,
-    }, '-=0.2')
     .from('.hero-scroll-hint', {
       opacity: 0,
       duration: 0.6,

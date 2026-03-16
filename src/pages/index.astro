@@ -25,6 +25,7 @@ import Layout from '../layouts/Layout.astro';
   <!-- ═══════════════ HERO ═══════════════ -->
   <section id="hero" class="hero">
     <div class="hero-bg">
+      <div class="hero-photo"></div>
       <div class="hero-gradient"></div>
       <div class="hero-stars"></div>
       <div class="hero-glow"></div>
@@ -349,10 +350,16 @@ import Layout from '../layouts/Layout.astro';
     position: absolute;
     inset: 0;
   }
+  .hero-photo {
+    position: absolute;
+    inset: 0;
+    background: url('/images/hero-bg-runway.jpg') center center / cover no-repeat;
+    opacity: 0.35;
+  }
   .hero-gradient {
     position: absolute;
     inset: 0;
-    background: radial-gradient(ellipse at 50% 30%, #141e35 0%, #0a0f1a 70%);
+    background: radial-gradient(ellipse at 50% 30%, rgba(20, 30, 53, 0.4) 0%, rgba(10, 15, 26, 0.6) 70%);
   }
   .hero-stars {
     position: absolute;

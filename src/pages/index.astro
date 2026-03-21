@@ -8,15 +8,11 @@ import Layout from '../layouts/Layout.astro';
   <nav class="nav" id="nav">
     <div class="nav-inner">
       <a href="#hero" class="nav-logo" aria-label="NH">
-        <svg viewBox="0 0 40 48" width="28" height="34" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round">
-          <line x1="6" y1="4" x2="6" y2="44"/>
-          <line x1="34" y1="4" x2="34" y2="44"/>
-          <line x1="6" y1="4" x2="34" y2="44">
-            <animate attributeName="x1" values="6;6;6;6;6;20;34"   keyTimes="0;0.4;0.46;0.86;0.918;0.959;1" dur="10s" repeatCount="indefinite" calcMode="spline" keySplines="0 0 1 1;0.42 0 0.58 1;0 0 1 1;0.42 0 1 1;0 0 1 1;0 0 0.58 1"/>
-            <animate attributeName="y1" values="4;4;24;24;44;44;44" keyTimes="0;0.4;0.46;0.86;0.918;0.959;1" dur="10s" repeatCount="indefinite" calcMode="spline" keySplines="0 0 1 1;0.42 0 0.58 1;0 0 1 1;0.42 0 1 1;0 0 1 1;0 0 0.58 1"/>
-            <animate attributeName="x2" values="34;34;34;34;34;20;6" keyTimes="0;0.4;0.46;0.86;0.918;0.959;1" dur="10s" repeatCount="indefinite" calcMode="spline" keySplines="0 0 1 1;0.42 0 0.58 1;0 0 1 1;0.42 0 1 1;0 0 1 1;0 0 0.58 1"/>
-            <animate attributeName="y2" values="44;44;24;24;4;4;4"   keyTimes="0;0.4;0.46;0.86;0.918;0.959;1" dur="10s" repeatCount="indefinite" calcMode="spline" keySplines="0 0 1 1;0.42 0 0.58 1;0 0 1 1;0.42 0 1 1;0 0 1 1;0 0 0.58 1"/>
-          </line>
+        <svg id="nav-logo-svg" viewBox="-4 -8 48 64" width="30" height="40" fill="#d4a853">
+          <path id="nav-logo-bg" fill="#131c2e"/>
+          <path id="nav-logo-bar-l"/>
+          <path id="nav-logo-bar-r"/>
+          <path id="nav-logo-morph"/>
         </svg>
       </a>
       <div class="nav-links" id="nav-links">
@@ -1103,6 +1099,77 @@ import Layout from '../layouts/Layout.astro';
     yoyo: true,
     ease: 'power1.inOut',
   });
+
+  // ── Nav logo morph animation ──
+  {
+    const SW = 5.25;
+    const HW = SW / 2;
+    const K_SQ = 0.85;
+    const K_CI = 0.5523;
+
+    function vBar(cx: number, y1: number, y2: number, hw: number, k: number): string {
+      const kh = k * hw, l = cx - hw, r = cx + hw, t = y1 - hw, b = y2 + hw;
+      return `M ${r} ${y1} C ${r} ${y1-kh}, ${cx+kh} ${t}, ${cx} ${t} C ${cx-kh} ${t}, ${l} ${y1-kh}, ${l} ${y1} L ${l} ${y2} C ${l} ${y2+kh}, ${cx-kh} ${b}, ${cx} ${b} C ${cx+kh} ${b}, ${r} ${y2+kh}, ${r} ${y2} Z`;
+    }
+
+    function sqRect(x1: number, y1: number, x2: number, y2: number, cr: number, k: number): string {
+      const kc = k * cr;
+      return `M ${x1+cr} ${y1} L ${x2-cr} ${y1} C ${x2-cr+kc} ${y1}, ${x2} ${y1+cr-kc}, ${x2} ${y1+cr} L ${x2} ${y2-cr} C ${x2} ${y2-cr+kc}, ${x2-cr+kc} ${y2}, ${x2-cr} ${y2} L ${x1+cr} ${y2} C ${x1+cr-kc} ${y2}, ${x1} ${y2-cr+kc}, ${x1} ${y2-cr} L ${x1} ${y1+cr} C ${x1} ${y1+cr-kc}, ${x1+cr-kc} ${y1}, ${x1+cr} ${y1} Z`;
+    }
+
+    function lineOut(x1: number, y1: number, x2: number, y2: number, hw: number, k: number): string {
+      const dx = x2-x1, dy = y2-y1, len = Math.sqrt(dx*dx+dy*dy);
+      if (len < 0.001) {
+        const kh = k*hw, l = x1-hw, r = x1+hw, t = y1-hw, b = y1+hw;
+        return `M ${r} ${y1} C ${r} ${y1-kh}, ${x1+kh} ${t}, ${x1} ${t} C ${x1-kh} ${t}, ${l} ${y1-kh}, ${l} ${y1} C ${l} ${y1+kh}, ${x1-kh} ${b}, ${x1} ${b} C ${x1+kh} ${b}, ${r} ${y1+kh}, ${r} ${y1} Z`;
+      }
+      const ux=dx/len, uy=dy/len, px=-uy, py=ux;
+      const r1x=x1+px*hw, r1y=y1+py*hw, l1x=x1-px*hw, l1y=y1-py*hw;
+      const r2x=x2+px*hw, r2y=y2+py*hw, l2x=x2-px*hw, l2y=y2-py*hw;
+      const kh=k*hw, tsx=x1-ux*hw, tsy=y1-uy*hw, tex=x2+ux*hw, tey=y2+uy*hw;
+      return `M ${r1x} ${r1y} L ${r2x} ${r2y} C ${r2x+ux*kh} ${r2y+uy*kh}, ${tex+px*kh} ${tey+py*kh}, ${tex} ${tey} C ${tex-px*kh} ${tey-py*kh}, ${l2x+ux*kh} ${l2y+uy*kh}, ${l2x} ${l2y} L ${l1x} ${l1y} C ${l1x-ux*kh} ${l1y-uy*kh}, ${tsx-px*kh} ${tsy-py*kh}, ${tsx} ${tsy} C ${tsx+px*kh} ${tsy+py*kh}, ${r1x-ux*kh} ${r1y-uy*kh}, ${r1x} ${r1y} Z`;
+    }
+
+    function lrp(a: number, b: number, t: number): number { return a+(b-a)*t; }
+    function eas(t: number): number { return t<0.5 ? 4*t*t*t : 1-Math.pow(-2*t+2,3)/2; }
+
+    const bgEl = document.getElementById('nav-logo-bg');
+    const blEl = document.getElementById('nav-logo-bar-l');
+    const brEl = document.getElementById('nav-logo-bar-r');
+    const mEl = document.getElementById('nav-logo-morph');
+
+    if (bgEl && blEl && brEl && mEl) {
+      bgEl.setAttribute('d', sqRect(-4, -8, 44, 56, 10, K_SQ));
+      blEl.setAttribute('d', vBar(6, 4, 44, HW, K_SQ));
+      brEl.setAttribute('d', vBar(34, 4, 44, HW, K_SQ));
+
+      const cir = {x1:20, y1:24, x2:20, y2:24, hw:5.25};
+      const hSt = {x1:13.875, y1:24, x2:26.125, y2:24, hw:HW};
+      const nSt = {x1:13.875, y1:15.25, x2:26.125, y2:32.75, hw:HW};
+      const MR = 1600, HN = 1500, HH = 3000, TOT = MR+HN+MR+HH;
+
+      function mf(from: typeof cir, to: typeof cir, fk: number, tk: number, st: number) {
+        mEl!.setAttribute('d', lineOut(lrp(from.x1,to.x1,st), lrp(from.y1,to.y1,st), lrp(from.x2,to.x2,st), lrp(from.y2,to.y2,st), lrp(from.hw,to.hw,st), lrp(fk,tk,st)));
+      }
+
+      function logoTick(ts: number) {
+        const c = ts % TOT;
+        if (c < HN) {
+          mEl!.setAttribute('d', lineOut(nSt.x1,nSt.y1,nSt.x2,nSt.y2,nSt.hw,K_SQ));
+        } else if (c < HN+MR) {
+          const r = eas((c-HN)/MR);
+          r<=0.5 ? mf(nSt,cir,K_SQ,K_CI,r*2) : mf(cir,hSt,K_CI,K_SQ,(r-0.5)*2);
+        } else if (c < HN+MR+HH) {
+          mEl!.setAttribute('d', lineOut(hSt.x1,hSt.y1,hSt.x2,hSt.y2,hSt.hw,K_SQ));
+        } else {
+          const r = eas((c-HN-MR-HH)/MR);
+          r<=0.5 ? mf(hSt,cir,K_SQ,K_CI,r*2) : mf(cir,nSt,K_CI,K_SQ,(r-0.5)*2);
+        }
+        requestAnimationFrame(logoTick);
+      }
+      requestAnimationFrame(logoTick);
+    }
+  }
 
   // ── Compass needle animation ──
   {
